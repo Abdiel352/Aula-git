@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: exemplo_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  app-normal:
+    build: 
+      context: ./normal
+    ports:
+      - "3000:3000"
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_HOST: db
+      DB_NAME: exemplo_db
+    depends_on:
+      - db
+
+  # Para testar a versão otimizada, comente o serviço 'app-normal' 
+  # e descomente o serviço 'app-optimized' abaixo (mudando as portas)
+  # app-optimized:
+  #   build: 
+  #     context: ./optimized
+  #   ports:
+  #     - "3001:3000"
+  #   environment:
+  #     DB_USER: postgres
+  #     DB_PASSWORD: password
+  #     DB_HOST: db
+  #     DB_NAME: exemplo_db
+  #   depends_on:
+  #     - db
+
+volumes:
+  db_data:
